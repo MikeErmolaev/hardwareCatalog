@@ -6,17 +6,20 @@ const config = require('../config').database;
 const mysql = require('mysql');
 const wrapper = require('co-mysql');
 const route = require('koa-route');
+const logger = require('koa-logger');
 const connection = mysql.createConnection(config);
 
 connection.connect(err => {
   if (err) {
-    console.log('Error connecting to Db');
+    console.log('Error connecting to Db ' + err);
     return;
   }
   console.log('Connection to database established');
 });
 
 const db = wrapper (connection);
+
+app.use(logger());
 
 app.use(bodyParser());
 
@@ -32,6 +35,10 @@ app.use(function *(next) {
 
 app.use(route.get('/getCategories', function *() {
   this.body = yield db.query('SELECT * from categories');
+}));
+
+app.use(route.get('/getList/:id', function *(id) {
+  this.body = yield db.query(`SELECT * from products where categories_id_category = ${id}`)
 }));
 
 app.use(route.get('*', function *(){

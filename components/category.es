@@ -1,18 +1,17 @@
 import React from "react";
 import { Link } from "react-router";
 import { GET } from "../tools/xhr";
-import Tile from "./Tile";
 
 export default React.createClass({
     getInitialState() {
-        return { categories: [{name: ''}] };
+        return { list: [] };
     },
 
     componentDidMount() {
         GET({
-            url: 'getCategories',
+            url: `/getList/${this.props.params.id}`,
             successCb: response => {
-                this.setState({ categories: response });
+                this.setState({ list: response });
             }
         });
     },
@@ -20,8 +19,8 @@ export default React.createClass({
     render() {
         return (
             <ul>
-                {this.state.categories.map(item => {
-                    return <Tile key = {item.name} categoryId = {`${ item.id_category }`} categoryName = {item.name} />
+                {this.state.list.map(item => {
+                    return <li key = {item.name}>{ item.name }</li>
                 })}
             </ul>
         )
